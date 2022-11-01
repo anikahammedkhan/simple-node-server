@@ -25,14 +25,21 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const userCollection = client.db("simpleNode").collection("users");
-        const user = { name: "John Doe gsdg", email: "fafafayfdfbfasdf@gmail.com" };
+        // const user = { name: "John Doe gsdg", email: "fafafayfdfbfasdf@gmail.com" };
         // const result = await userCollection.insertOne(user);
         // console.log(result);
+        app.get('/users', async (req, res) => {
+            const cursor = userCollection.find({});
+            const users = await cursor.toArray();
+            res.send(users);
+        });
+
+
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             console.log(result);
-            user.id = result.insertedId;
+            user._id = result.insertedId;
             res.send(user);
         })
     }
@@ -48,16 +55,16 @@ app.get('/', (req, res) => {
     res.send('Simple node server running');
 });
 
-app.get('/users', (req, res) => {
-    if (req.query.name) {
-        const search = req.query.name.toLowerCase();
-        const filtered = users.filter(user => user.name.toLowerCase().includes(search));
-        res.send(filtered);
-    }
-    else {
-        res.send(users);
-    }
-});
+// app.get('/users', (req, res) => {
+//     if (req.query.name) {
+//         const search = req.query.name.toLowerCase();
+//         const filtered = users.filter(user => user.name.toLowerCase().includes(search));
+//         res.send(filtered);
+//     }
+//     else {
+//         res.send(users);
+//     }
+// });
 
 
 app.listen(port, () => {
